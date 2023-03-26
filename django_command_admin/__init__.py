@@ -1,1 +1,1 @@
-default_app_config = '%s.apps.Config' % __file__.split('/')[-2]
+default_app_config = 'django_command_admin.apps.Config'

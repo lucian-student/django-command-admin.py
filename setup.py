@@ -1,8 +1,8 @@
 from setuptools import setup
 
 setup(
-    name='django-command-admin',
-    version='2021.6.21',
+    name='django-fork-command-admin',
+    version='1.0.0',
     packages=[
         'django_command_admin',
         'django_command_admin.admin',

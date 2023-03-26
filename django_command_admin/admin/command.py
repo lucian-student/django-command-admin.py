@@ -3,6 +3,7 @@ from datetime import datetime
 import io
 import os
 
+from django.conf import settings
 from django.apps import apps
 from django.contrib import admin
 from django.core.management import call_command, get_commands
@@ -19,22 +20,32 @@ class CommandAdmin(admin.ModelAdmin):
     list_filter = ['app',]
     search_fields = ['app','name']
 
+    def filter_commands(self,commands,prefix):
+        for name in commands:
+            if not name.startswith(prefix):
+                    continue
+            yield name
+
     def get_queryset(self, request):
+        prefix = settings.DJANGO_ADMIN_COMMANDS_PREFIX
         qs = super().get_queryset(request)
-        for name,app in get_commands().items():
-            defaults = dict(app=app)
-            Command.objects.get_or_create(defaults,name=name)
-        Command.objects.exclude(name__in=list(get_commands().keys())).delete()
+        if settings.DJANGO_ADMIN_COMMANDS_SYNC:
+            for name,app in get_commands().items():
+                if not name.startswith(prefix):
+                    continue
+                defaults = dict(app=app)
+                Command.objects.get_or_create(defaults,name=name)
+            Command.objects.exclude(name__in=list(self.filter_commands(get_commands().keys(),prefix))).delete()
         return qs
 
     def has_add_permission(self, request, obj=None):
-        return False
+        return settings.DJANGO_ADMIN_COMMANDS_ALLOW_ADD
 
     def has_change_permission(self, request, obj=None):
-       return False
+       return settings.DJANGO_ADMIN_COMMANDS_ALLOW_EDIT
 
     def has_delete_permission(self, request, obj=None):
-       return False
+       return settings.DJANGO_ADMIN_COMMANDS_ALLOW_DELETE
 
     def get_urls(self):
         urls = super().get_urls()
