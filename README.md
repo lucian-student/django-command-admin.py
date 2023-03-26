@@ -20,7 +20,7 @@ DJANGO_ADMIN_COMMANDS_SYNC = True
 
 ### Installation
 ```bash
-$ pip install django-command-admin
+$ pip install django-fork-command-admin==1.0.0
 ```
 
 #### `settings.py`
